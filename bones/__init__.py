@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from server.bones.bone import baseBone, boneFactory
 from server.bones.stringBone import stringBone
 from server.bones.textBone import textBone
@@ -22,3 +21,4 @@ from server.bones.selectCountryBone import selectCountryBone
 from server.bones.emailBone import emailBone
 from server.bones.randomSliceBone import randomSliceBone
 from server.bones.spatialBone import spatialBone
+from server.bones.markdownBone import markdownBone

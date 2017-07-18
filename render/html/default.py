@@ -9,7 +9,7 @@ from server.bones import *
 from collections import OrderedDict
 from jinja2 import Environment, FileSystemLoader, ChoiceLoader
 
-import os, logging, codecs
+import os, logging, codecs, markdown
 
 class Render( object ):
 	"""
@@ -51,7 +51,7 @@ class Render( object ):
 	cloneSuccessTemplate = "clone_success"
 
 	__haveEnvImported_ = False
-	
+
 	class KeyValueWrapper:
 		"""
 			This holds one Key-Value pair for
@@ -67,13 +67,13 @@ class Render( object ):
 
 		def __str__( self ):
 			return( unicode( self.key ) )
-		
+
 		def __repr__( self ):
 			return( unicode( self.key ) )
-		
+
 		def __eq__( self, other ):
 			return( unicode( self ) == unicode( other ) )
-		
+
 		def __lt__( self, other ):
 			return( unicode( self ) < unicode( other ) )
 
@@ -97,7 +97,7 @@ class Render( object ):
 			Render.__haveEnvImported_ = True
 		self.parent = parent
 
-	
+
 	def getTemplateFileName( self, template, ignoreStyle=False ):
 		"""
 			Returns the filename of the template.
@@ -133,8 +133,8 @@ class Render( object ):
 		fnames = [ template+stylePostfix+".html", template+".html" ]
 		if lang:
 			fnames = [ 	os.path.join(  lang, template+stylePostfix+".html"),
-						template+stylePostfix+".html", 
-						os.path.join(  lang, template+".html"), 
+						template+stylePostfix+".html",
+						os.path.join(  lang, template+".html"),
 						template+".html" ]
 		for fn in fnames: #check subfolders
 			prefix = template.split("_")[0]
@@ -301,6 +301,16 @@ class Render( object ):
 			return skel[key]
 		elif bone.type=="selectmulti" or bone.type.startswith("selectmulti."):
 			return [(Render.KeyValueWrapper(val, bone.values[val]) if val in bone.values.keys() else val) for val in skel[key]]
+		elif bone.type == "str.markdown":
+			if isinstance(skel[key], list):
+				ret = []
+				for k in skel[key]:
+					ret.append(markdown.markdown(k))
+
+				return ret
+			else:
+				return markdown.markdown(skel[key])
+
 		elif bone.type=="relational" or bone.type.startswith("relational."):
 			if isinstance(skel[key], list):
 				tmpList = []
@@ -466,7 +476,7 @@ class Render( object ):
 		res = self.collectSkelData( skel )
 
 		return( template.render( skel=res, **kwargs ) )
-	
+
 	def deleteSuccess (self, *args, **kwargs ):
 		"""
 			Renders a page, informing that the entry has been successfully deleted.
@@ -486,7 +496,7 @@ class Render( object ):
 		template = self.getEnv().get_template( self.getTemplateFileName( tpl ) )
 
 		return( template.render( **kwargs ) )
-	
+
 	def list( self, skellist, tpl=None, **kwargs ):
 		"""
 			Renders a list of entries.
@@ -514,7 +524,7 @@ class Render( object ):
 		for skel in skellist:
 			resList.append( self.collectSkelData(skel) )
 		return( template.render( skellist=SkelListWrapper(resList, skellist), **kwargs ) )
-	
+
 	def listRootNodes(self, repos, tpl=None, **kwargs ):
 		"""
 			Renders a list of available repositories.
@@ -538,7 +548,7 @@ class Render( object ):
 			tpl = "list"
 		template = self.getEnv().get_template( self.getTemplateFileName( tpl ) )
 		return( template.render( repos=repos, **kwargs ) )
-	
+
 	def view( self, skel, tpl=None, **kwargs ):
 		"""
 			Renders a single entry.
@@ -566,7 +576,7 @@ class Render( object ):
 			res = skel
 
 		return( template.render( skel=res, **kwargs ) )
-	
+
 	## Extended functionality for the Tree-Application ##
 	def listRootNodeContents( self, subdirs, entries, tpl=None, **kwargs):
 		"""
@@ -580,7 +590,7 @@ class Render( object ):
 
 			:param entries: List of entries of the current level
 			:type entries: server.db.skeleton.SkelList
-			
+
 			:param tpl: Name of a different template, which should be used instead of the default one
 			:param: tpl: str
 
@@ -645,7 +655,7 @@ class Render( object ):
 	def copySuccess(self, srcrepo, srcpath, name, destrepo, destpath, type, deleteold, *args, **kwargs ):
 		"""
 			Renders a page, informing that an entry has been successfully copied/moved.
-			
+
 			:param srcrepo: RootNode-key from which has been copied/moved
 			:type srcrepo: str
 
@@ -680,7 +690,7 @@ class Render( object ):
 	def reparentSuccess(self, obj, tpl=None, **kwargs ):
 		"""
 			Renders a page informing that the item was successfully moved.
-			
+
 			:param obj: ndb.Expando instance of the item that was moved.
 			:type obj: ndb.Expando
 
@@ -767,7 +777,7 @@ class Render( object ):
 			res = skel
 		if len(tpl)<101:
 			try:
-				template = self.getEnv().from_string(  codecs.open( "emails/"+tpl+".email", "r", "utf-8" ).read() ) 
+				template = self.getEnv().from_string(  codecs.open( "emails/"+tpl+".email", "r", "utf-8" ).read() )
 			except:
 				template = self.getEnv().get_template( tpl+".email" )
 		else:

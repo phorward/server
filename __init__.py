@@ -182,7 +182,7 @@ def setDefaultDomainLanguage( domain, lang ):
 		host = host[ 4: ]
 	conf["viur.domainLanguageMapping"][host] = lang.lower()
 
-### Multi-Language Part: END 
+### Multi-Language Part: END
 
 from server import session, errors
 from server.tasks import TaskHandler, runStartupTasks
@@ -234,7 +234,7 @@ def buildApp( config, renderers, default=None, *args, **kwargs ):
 	"""
 	class ExtendableObject( object ):
 		pass
-		
+
 	if isinstance( renderers,  dict ):
 		rendlist = renderers
 	else: # build up the dict from server.render
@@ -330,7 +330,7 @@ class BrowseHandler(webapp.RequestHandler):
 
 		:warning: Don't instantiate! Don't subclass! DON'T TOUCH! ;)
 	"""
-	
+
 	def get(self, path="/", *args, **kwargs): #Accept a HTTP-GET request
 		t1 = time()
 		if path=="_ah/start" or path=="_ah/warmup": #Warmup request
@@ -350,7 +350,7 @@ class BrowseHandler(webapp.RequestHandler):
 	def head(self, path="/", *args, **kwargs): #Accept a HTTP-HEAD request
 		self.isPostRequest = False
 		self.processRequest( path, *args, **kwargs )
-		
+
 	def selectLanguage( self, path ):
 		"""
 			Tries to select the best language for the current request.
@@ -504,7 +504,7 @@ class BrowseHandler(webapp.RequestHandler):
 			self.response.out.write( res )
 			if bugsnag and conf["bugsnag.apiKey" ]:
 				bugsnag.configure( api_key=conf["bugsnag.apiKey" ] )
-				try: 
+				try:
 					user = conf["viur.mainApp"].user.getCurrentUser()
 				except:
 					user = "-unknown-"
@@ -516,7 +516,7 @@ class BrowseHandler(webapp.RequestHandler):
 				bugsnag.notify( e )
 		finally:
 			self.saveSession( )
-	
+
 
 	def findAndCall( self, path, *args, **kwargs ): #Do the actual work: process the request
 		# Prevent Hash-collision attacks
@@ -710,7 +710,7 @@ def setup( modules, render=None, default="html" ):
 			uri.lower().startswith("https://") or uri.lower().startswith("http://"))
 	runStartupTasks() #Add a deferred call to run all queued startup tasks
 	return( conf["viur.wsgiApp"] )
-	
+
 
 def run():
 	"""
