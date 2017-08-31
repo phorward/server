@@ -16,11 +16,11 @@ class LanguageWrapper( dict ):
 		but can also be used as a string, in which case it tries to
 		guess the correct language.
 	"""
-	
+
 	def __init__( self, languages ):
 		super( LanguageWrapper, self ).__init__()
 		self.languages = languages
-	
+
 	def __str__( self ):
 		return( unicode(self.resolve()) )
 
@@ -152,7 +152,7 @@ class stringBone( baseBone ):
 			Otherwise our previous value is
 			left unchanged and an error-message
 			is returned.
-			
+
 			:param name: Our name in the :class:`server.skeleton.Skeleton`
 			:type name: str
 			:param data: *User-supplied* request-data
@@ -200,7 +200,7 @@ class stringBone( baseBone ):
 					else:
 						lastError = err
 				if len(res) > 0:
-					res = res[0:254]  # Max 254 character 
+					res = res[0:254]  # Max 254 character
 				else:
 					lastError = "No valid rawValue entered"
 		elif not self.multiple and self.languages:
@@ -225,7 +225,7 @@ class stringBone( baseBone ):
 				lastError = "No rawValue entered"
 		valuesCache[name] = res
 		return lastError
-				
+
 
 	def buildDBFilter( self, name, skel, dbFilter, rawFilter, prefix=None ):
 		if not name in rawFilter.keys() and not any( [(x.startswith(name+"$") or x.startswith(name+".")) for x in rawFilter.keys()] ):
@@ -367,7 +367,7 @@ class stringBone( baseBone ):
 			if valuesCache[name] is not None:
 				for lang in self.languages:
 					if lang in valuesCache[name].keys():
-						res.append( search.TextField( name=name, value=unicode( valuesCache[name][lang]), language=lang ) ) 
+						res.append( search.TextField( name=name, value=unicode( valuesCache[name][lang]), language=lang ) )
 		else:
 			res.append( search.TextField( name=name, value=unicode( valuesCache[name] ) ) )
 		return( res )

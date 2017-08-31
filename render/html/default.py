@@ -89,6 +89,35 @@ class Render( object ):
 		def __trunc__( self ):
 			return( self.key.__trunc__() )
 
+	class FormattedTextWrapper:
+		def __init__(self, raw, formatted):
+			self.raw = raw
+			self.formatted = formatted
+
+		def __str__(self):
+			return unicode(self.formatted)
+
+		def __repr__(self):
+			return unicode(self.formatted)
+
+		def __eq__(self, other):
+			return unicode(self) == unicode(other)
+
+		def __lt__(self, other):
+			return unicode(self) < unicode(other)
+
+		def __gt__(self, other):
+			return unicode(self) > unicode(other)
+
+		def __le__(self, other):
+			return unicode(self) <= unicode(other)
+
+		def __ge__(self, other):
+			return unicode(self) >= unicode(other)
+
+		def __trunc__(self):
+			return self.formatted.__trunc__()
+
 	def __init__(self, parent=None, *args, **kwargs ):
 		super( Render, self ).__init__(*args, **kwargs)
 		if not Render.__haveEnvImported_:
@@ -305,11 +334,11 @@ class Render( object ):
 			if isinstance(skel[key], list):
 				ret = []
 				for k in skel[key]:
-					ret.append(markdown.markdown(k))
+					ret.append(Render.FormattedTextWrapper(k, markdown.markdown(k)))
 
 				return ret
 			else:
-				return markdown.markdown(skel[key])
+				return Render.FormattedTextWrapper(skel[key], markdown.markdown(skel[key]))
 
 		elif bone.type=="relational" or bone.type.startswith("relational."):
 			if isinstance(skel[key], list):
