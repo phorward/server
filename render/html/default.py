@@ -89,10 +89,10 @@ class Render( object ):
 		def __trunc__( self ):
 			return( self.key.__trunc__() )
 
-	class FormattedTextWrapper:
-		def __init__(self, raw, formatted):
-			self.raw = raw
-			self.formatted = formatted
+	class MarkdownTextWrapper:
+		def __init__(self, text):
+			self.raw = text
+			self.formatted = markdown.markdown(text, extensions=["markdown.extensions.codehilite"])
 
 		def __str__(self):
 			return unicode(self.formatted)
@@ -334,11 +334,11 @@ class Render( object ):
 			if isinstance(skel[key], list):
 				ret = []
 				for k in skel[key]:
-					ret.append(Render.FormattedTextWrapper(k, markdown.markdown(k)))
+					ret.append(Render.MarkdownTextWrapper(k))
 
 				return ret
 			else:
-				return Render.FormattedTextWrapper(skel[key], markdown.markdown(skel[key]))
+				return Render.MarkdownTextWrapper(skel[key])
 
 		elif bone.type=="relational" or bone.type.startswith("relational."):
 			if isinstance(skel[key], list):
