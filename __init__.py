@@ -25,7 +25,7 @@
  See file LICENSE for more information.
 """
 
-__version__ = (2, 0, 3)  # Which API do we expose to our application
+__version__ = (2, 1, 0)  # Which API do we expose to our application
 
 import sys, traceback, os, inspect
 
@@ -132,22 +132,22 @@ def translate( key, **kwargs ):
 	res = None
 	lang = lang or conf["viur.defaultLanguage"]
 
-	if "_lang" in kwargs.keys():
+	if "_lang" in kwargs:
 		lang = kwargs[ "_lang" ]
 
-	if lang in conf["viur.languageAliasMap"].keys():
+	if lang in conf["viur.languageAliasMap"]:
 		lang = conf["viur.languageAliasMap"][ lang ]
 
 	if lang and lang in dir( translations ):
 		langDict = getattr(translations,lang)
 
-		if key.lower() in langDict.keys():
+		if key.lower() in langDict:
 			res = langDict[ key.lower() ]
 
 	if res is None and lang and lang in dir( servertrans ):
 		langDict = getattr(servertrans,lang)
 
-		if key.lower() in langDict.keys():
+		if key.lower() in langDict:
 			res = langDict[ key.lower() ]
 
 	if res is None and conf["viur.logMissingTranslations"]:
@@ -361,7 +361,7 @@ class BrowseHandler(webapp.RequestHandler):
 		if conf["viur.languageMethod"] == "session":
 			# We store the language inside the session, try to load it from there
 			if not session.current.getLanguage():
-				if "X-Appengine-Country" in self.request.headers.keys():
+				if "X-Appengine-Country" in self.request.headers:
 					lng = self.request.headers["X-Appengine-Country"].lower()
 					if lng in conf["viur.availableLanguages"]+list( conf["viur.languageAliasMap"].keys() ):
 						session.current.setLanguage( lng )
@@ -375,7 +375,7 @@ class BrowseHandler(webapp.RequestHandler):
 			host = host[ host.find("://")+3: ].strip(" /") #strip http(s)://
 			if host.startswith("www."):
 				host = host[ 4: ]
-			if host in conf["viur.domainLanguageMapping"].keys():
+			if host in conf["viur.domainLanguageMapping"]:
 				self.language = conf["viur.domainLanguageMapping"][ host ]
 			else: # We have no language configured for this domain, try to read it from session
 				if session.current.getLanguage():
@@ -471,7 +471,7 @@ class BrowseHandler(webapp.RequestHandler):
 			if conf["viur.debug.traceExceptions"]:
 				raise
 			self.response.clear()
-			self.response.set_status( e.status )
+			self.response.set_status(e.status, e.descr)
 			res = None
 			if conf["viur.errorHandler"]:
 				try:
@@ -530,7 +530,7 @@ class BrowseHandler(webapp.RequestHandler):
 		for key in tmpArgs.keys()[ : ]:
 			if len( tmpArgs[ key ] ) == 0:
 				continue
-			if not key in kwargs.keys():
+			if not key in kwargs:
 				if len( tmpArgs[ key ] ) == 1:
 					kwargs[ key ] = tmpArgs[ key ][0]
 				else:
@@ -541,7 +541,7 @@ class BrowseHandler(webapp.RequestHandler):
 				else:
 					kwargs[key] = [ kwargs[key] ] + tmpArgs[key]
 		del tmpArgs
-		if "self" in kwargs.keys(): #self is reserved for bound methods
+		if "self" in kwargs: #self is reserved for bound methods
 			raise errors.BadRequest()
 		#Parse the URL
 		path = urlparse.urlparse( path ).path
@@ -670,7 +670,7 @@ def setup( modules, render=None, default="html" ):
 				if not skel.kindName:
 					# Looks like a common base-class for skeletons
 					continue
-				if skel.kindName in conf["viur.skeletons"].keys() and skel!=conf["viur.skeletons"][ skel.kindName ]:
+				if skel.kindName in conf["viur.skeletons"] and skel!=conf["viur.skeletons"][ skel.kindName ]:
 					# We have a conflict here, lets see if one skeleton is from server.*, and one from skeletons.*
 					relNewFileName = inspect.getfile(skel).replace( os.getcwd(),"" )
 					relOldFileName = inspect.getfile(conf["viur.skeletons"][ skel.kindName ]).replace( os.getcwd(),"" )
