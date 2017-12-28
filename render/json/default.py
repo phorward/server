@@ -36,7 +36,14 @@ class DefaultRender(object):
 			"unique": bone.unique
 		}
 
-		if bone.type == "relational" or bone.type.startswith("relational."):
+		if bone.type == "group" or bone.type.startswith("group."):
+			ret.update({
+				"multiple": bone.multiple,
+				"format": bone.format,
+				"using": self.renderSkelStructure(bone.using())
+			})
+
+		elif bone.type == "relational" or bone.type.startswith("relational."):
 			if isinstance(bone, bones.hierarchyBone):
 				boneType = "hierarchy"
 			elif isinstance(bone, bones.treeItemBone):
@@ -53,7 +60,6 @@ class DefaultRender(object):
 				"using": self.renderSkelStructure(bone.using()) if bone.using else None,
 				"relskel": self.renderSkelStructure(RefSkel.fromSkel(skeletonByKind(bone.kind), *bone.refKeys))
 			})
-
 
 		elif bone.type == "selectone" or bone.type.startswith("selectone.") or bone.type == "selectmulti" or bone.type.startswith("selectmulti."):
 			ret.update({
