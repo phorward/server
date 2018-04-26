@@ -3,10 +3,11 @@ from server.bones.bone import baseBone, getSystemInitialized
 from server.errors import ReadFromClientError
 import extjson
 
+
 class recordBone(baseBone):
 	type = "record"
 
-	def __init__(self, using, format = None, *args, **kwargs):
+	def __init__(self, using, format=None, *args, **kwargs):
 		super(recordBone, self).__init__(*args, **kwargs)
 
 		self.using = using
@@ -14,14 +15,15 @@ class recordBone(baseBone):
 
 		if getSystemInitialized():
 			self._usingSkelCache = using()
-			#self._generateFormat()
+		# self._generateFormat()
 		else:
 			self._usingSkelCache = None
 
 	def setSystemInitialized(self):
 		super(recordBone, self).setSystemInitialized()
 		self._usingSkelCache = self.using()
-		#self._generateFormat()
+
+	# self._generateFormat()
 
 	def _generateFormat(self):
 		if self.format is not None:
@@ -224,3 +226,69 @@ class recordBone(baseBone):
 			return ReadFromClientError(errorDict, forceFail)
 
 		return None
+
+	def getSearchTags(self, values, key):
+		def getValues(res, skel, valuesCache):
+			for k, bone in skel.items():
+				if bone.searchable:
+					for tag in bone.getSearchTags(valuesCache, k):
+						if tag not in res:
+							res.append(tag)
+			return res
+
+		value = values.get(key)
+		res = []
+
+		if not value:
+			return res
+
+		if self.multiple:
+			for val in value:
+				res = getValues(res, self._usingSkelCache, val)
+
+		else:
+			res = getValues(res, self._usingSkelCache, value)
+
+		return res
+
+	def getSearchDocumentFields(self, valuesCache, name, prefix=""):
+		def getValues(res, skel, valuesCache, searchPrefix):
+			for key, bone in skel.items():
+				if bone.searchable:
+					res.extend(bone.getSearchDocumentFields(valuesCache, key, prefix=searchPrefix))
+
+		value = valuesCache.get(name)
+		res = []
+
+		if not value:
+			return res
+
+		if self.multiple:
+			for idx, val in enumerate(value):
+				getValues(res, self._usingSkelCache, val, "%s%s_%s" % (prefix, name, str(idx)))
+		else:
+			getValues(res, self._usingSkelCache, value, "%s%s" % (prefix, name))
+
+		return res
+
+	def getReferencedBlobs(self, valuesCache, name):
+		def blobsFromSkel(skel, valuesCache):
+			blobList = set()
+			for key, _bone in skel.items():
+				blobList.update(_bone.getReferencedBlobs(valuesCache, key))
+			return blobList
+
+		res = set()
+		value = valuesCache.get(name)
+
+		if not value:
+			return res
+
+		if isinstance(value, list):
+			for val in value:
+				res.update(blobsFromSkel(self._usingSkelCache, val))
+
+		elif isinstance(value, dict):
+			res.update(blobsFromSkel(self._usingSkelCache, value))
+
+		return res
