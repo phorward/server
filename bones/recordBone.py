@@ -3,11 +3,11 @@ from server.bones.bone import baseBone, getSystemInitialized
 from server.errors import ReadFromClientError
 import extjson
 
-class groupBone(baseBone):
-	type = "group"
+class recordBone(baseBone):
+	type = "record"
 
 	def __init__(self, using, format = None, *args, **kwargs):
-		super(groupBone, self).__init__(*args, **kwargs)
+		super(recordBone, self).__init__(*args, **kwargs)
 
 		self.using = using
 		self.format = format
@@ -19,7 +19,7 @@ class groupBone(baseBone):
 			self._usingSkelCache = None
 
 	def setSystemInitialized(self):
-		super(groupBone, self).setSystemInitialized()
+		super(recordBone, self).setSystemInitialized()
 		self._usingSkelCache = self.using()
 		#self._generateFormat()
 

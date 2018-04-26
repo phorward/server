@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from server.bones import groupBone, stringBone, selectOneBone
+from server.bones import recordBone, stringBone, selectOneBone
 
-class urlBone(groupBone):
-	type = "group.url"
+class urlBone(recordBone):
+	type = "record.url"
 	validProtocols = ["http://", "https://"]
 
 	def __init__(self, enforceProtocol="//", *args, **kwargs):

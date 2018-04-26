@@ -36,7 +36,7 @@ class DefaultRender(object):
 			"unique": bone.unique
 		}
 
-		if bone.type == "group" or bone.type.startswith("group."):
+		if bone.type == "record" or bone.type.startswith("record."):
 			ret.update({
 				"multiple": bone.multiple,
 				"format": bone.format,
