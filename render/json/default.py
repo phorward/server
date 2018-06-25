@@ -85,6 +85,11 @@ class DefaultRender(object):
 				"validHtml": bone.validHtml,
 				"languages": bone.languages
 			})
+		elif bone.type == "html" or bone.type.startswith("html."):
+			ret.update({
+				"validHtml": bone.validHtml,
+				"languages": bone.languages
+			})
 
 		elif bone.type == "str" or bone.type.startswith("str."):
 			ret.update({
