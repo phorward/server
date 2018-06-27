@@ -22,3 +22,6 @@ from server.bones.selectCountryBone import selectCountryBone
 from server.bones.emailBone import emailBone
 from server.bones.randomSliceBone import randomSliceBone
 from server.bones.spatialBone import spatialBone
+from server.bones.recordBone import recordBone
+from server.bones.urlBone import urlBone
+from server.bones.htmlBone import htmlBone

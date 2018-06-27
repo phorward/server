@@ -54,7 +54,8 @@ class baseBone(object): # One Bone:
 	#		return boneFactory(cls, args, kwargs)
 
 	def __init__(	self, descr="", defaultValue=None, required=False, params=None, multiple=False,
-			indexed=False, searchable=False, vfunc=None, readOnly=False, visible=True, unique=False, **kwargs ):
+			indexed=False, searchable=False, vfunc=None, readOnly=False, visible=True, unique=False,
+			          **kwargs ):
 		"""
 			Initializes a new Bone.
 

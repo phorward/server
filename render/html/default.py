@@ -296,6 +296,8 @@ class Render( object ):
 		:return: A dict containing the rendered attributes.
 		:rtype: dict
 		"""
+
+		# selectBone
 		if bone.type == "select" or bone.type.startswith("select."):
 			skelValue = skel[key]
 			if isinstance(skelValue, list):
@@ -306,6 +308,8 @@ class Render( object ):
 			elif skelValue in bone.values:
 				return Render.KeyValueWrapper(skelValue, bone.values[skelValue])
 			return skelValue
+
+		# relationalBone
 		elif bone.type=="relational" or bone.type.startswith("relational."):
 			if isinstance(skel[key], list):
 				tmpList = []
@@ -323,9 +327,10 @@ class Render( object ):
 							usingData = None
 						tmpList.append({
 							"dest": self.collectSkelData(refSkel),
-			                                "rel": usingData
+							"rel": usingData
 						})
 				return tmpList
+
 			elif isinstance(skel[key], dict):
 				refSkel = bone._refSkelCache
 				refSkel.setValuesCache(skel[key]["dest"])
@@ -345,13 +350,29 @@ class Render( object ):
 					}
 			else:
 				return None
-		else:
-			#logging.error("RETURNING")
-			#logging.error((skel[key]))
-			return skel[key]
 
-		return None
+		# recordBone
+		elif bone.type == "record" or bone.type.startswith("record."):
+			usingSkel = bone._usingSkelCache
+			value = skel[key]
 
+			if isinstance(value, list):
+				ret = []
+				for entry in value:
+					usingSkel.setValuesCache(entry)
+					ret.append(self.collectSkelData(usingSkel))
+
+				return ret
+
+			elif isinstance(value, dict):
+				usingSkel.setValuesCache(value)
+				return self.collectSkelData(usingSkel)
+
+			else:
+				return None
+
+		# Any other bone, just return its value
+		return skel[key]
 
 	def collectSkelData(self, skel):
 		"""
@@ -510,7 +531,7 @@ class Render( object ):
 		template = self.getEnv().get_template( self.getTemplateFileName( tpl ) )
 		res = self.collectSkelData( skel )
 		return template.render(skel=res, params=params, **kwargs)
-	
+
 	def deleteSuccess(self, skel, tpl = None, params = None, *args, **kwargs):
 		"""
 			Renders a page, informing that the entry has been successfully deleted.
@@ -536,7 +557,7 @@ class Render( object ):
 
 		template = self.getEnv().get_template( self.getTemplateFileName( tpl ) )
 		return template.render(params=params, **kwargs)
-	
+
 	def list( self, skellist, tpl=None, params=None, **kwargs ):
 		"""
 			Renders a list of entries.
@@ -567,7 +588,7 @@ class Render( object ):
 		for skel in skellist:
 			resList.append( self.collectSkelData(skel) )
 		return template.render(skellist=SkelListWrapper(resList, skellist), params=params, **kwargs)
-	
+
 	def listRootNodes(self, repos, tpl=None, params=None, **kwargs ):
 		"""
 			Renders a list of available repositories.
@@ -624,7 +645,7 @@ class Render( object ):
 		else:
 			res = skel
 		return template.render(skel=res, params=params, **kwargs)
-	
+
 
 	## Extended functionality for the Tree-Application ##
 	def listRootNodeContents( self, subdirs, entries, tpl=None, params=None, **kwargs):

@@ -36,7 +36,14 @@ class DefaultRender(object):
 			"unique": bone.unique
 		}
 
-		if bone.type == "relational" or bone.type.startswith("relational."):
+		if bone.type == "record" or bone.type.startswith("record."):
+			ret.update({
+				"multiple": bone.multiple,
+				"format": bone.format,
+				"using": self.renderSkelStructure(bone.using())
+			})
+
+		elif bone.type == "relational" or bone.type.startswith("relational."):
 			if isinstance(bone, bones.hierarchyBone):
 				boneType = "hierarchy"
 			elif isinstance(bone, bones.treeItemBone):
@@ -53,7 +60,6 @@ class DefaultRender(object):
 				"using": self.renderSkelStructure(bone.using()) if bone.using else None,
 				"relskel": self.renderSkelStructure(RefSkel.fromSkel(skeletonByKind(bone.kind), *bone.refKeys))
 			})
-
 
 		elif bone.type == "select" or bone.type.startswith("select."):
 			ret.update({
@@ -75,6 +81,11 @@ class DefaultRender(object):
 			})
 
 		elif bone.type == "text" or bone.type.startswith("text."):
+			ret.update({
+				"validHtml": bone.validHtml,
+				"languages": bone.languages
+			})
+		elif bone.type == "html" or bone.type.startswith("html."):
 			ret.update({
 				"validHtml": bone.validHtml,
 				"languages": bone.languages
@@ -249,10 +260,10 @@ class DefaultRender(object):
 
 	def editItemSuccess(self, skel, params=None, **kwargs):
 		return self.renderEntry(skel, "editSuccess", params)
-		
+
 	def addItemSuccess(self, skel, params=None, **kwargs):
 		return self.renderEntry(skel, "addSuccess", params)
-		
+
 	def addDirSuccess(self, rootNode,  path, dirname, params=None, *args, **kwargs):
 		return json.dumps("OKAY")
 
