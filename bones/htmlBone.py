@@ -13,7 +13,7 @@ _attrsMargins = ["margin", "margin-left", "margin-right", "margin-top", "margin-
 _attrsSpacing = ["spacing", "spacing-left", "spacing-right", "spacing-top", "spacing-bottom"]
 _attrsDescr = ["title", "alt"]
 _defaultTags = {
-	"validTags": ['font', 'b', 'a', 'i', 'u', 'span', 'div', 'p', 'img', 'ol', 'ul', 'li', 'acronym',
+	"validTags": ['font', 'b', 'em', 'a', 'i', 'u', 'span', 'div', 'p', 'img', 'ol', 'ul', 'li', 'acronym',
 	              # List of HTML-Tags which are valid
 	              'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table', 'tr', 'td', 'th', 'br', 'hr', 'strong'],
 	"validAttrs": {"font": ["color"],
