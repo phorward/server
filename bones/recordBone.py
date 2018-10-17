@@ -139,7 +139,7 @@ class recordBone(baseBone):
 		clientPrefix = "%s." % name
 
 		for k, v in data.items():
-			print(k, v)
+			#print(k, v)
 
 			if k.startswith(clientPrefix) or k == name:
 				if k == name:
@@ -164,6 +164,9 @@ class recordBone(baseBone):
 				else:
 					idx = 0
 					bname = k
+
+				if not bname:
+					continue
 
 				if not idx in tmpRes:
 					tmpRes[idx] = {}
